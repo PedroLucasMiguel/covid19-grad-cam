@@ -7,11 +7,6 @@ import torch.optim as optim
 import numpy as np
 from torchvision import transforms
 from torchvision import datasets
-from ignite.engine import Events
-from ignite.metrics import *
-from ignite.handlers import ModelCheckpoint, global_step_from_engine
-from ignite.engine import Engine
-from ignite.contrib.handlers import ProgressBar
 from sklearn.model_selection import KFold
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from densenet201.densenet201 import get_model
@@ -128,7 +123,7 @@ for fold, (train_ids, test_ids) in enumerate(kfold.split(dataset)):
         if f1 > best_f1:
             if best_f1_file_name != "":
                 os.remove(f"./checkpoints/{best_f1_file_name}")
-                
+
             print(f"\nSaving saving training for Fold={fold} and Epoch={epoch}")
             torch.save(model.state_dict(), f"./checkpoints/f_{fold}_e_{epoch}_savestate.pt")
             best_f1_file_name = f"f_{fold}_e_{epoch}_savestate.pt"
