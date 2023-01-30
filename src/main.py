@@ -67,6 +67,7 @@ for fold, (train_ids, test_ids) in enumerate(kfold.split(dataset)):
     # Definindo nossa função para o calculo de loss e o otimizador
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), momentum=hp.MOMENTUM, weight_decay=hp.WEIGHT_DECAY, lr=hp.LEARNING_RATE)
+    scheduler = optim.lr_scheduler.MultiStepLR(optimizer=optimizer, milestones=[30, 60], gamma=0.1)
 
     # Iniciando o processo de treinamento
     for epoch in range(0, hp.EPOCHS):
@@ -83,6 +84,8 @@ for fold, (train_ids, test_ids) in enumerate(kfold.split(dataset)):
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+        
+        scheduler.step()
         
         accuracy = []
         precision = []
@@ -125,6 +128,7 @@ for fold, (train_ids, test_ids) in enumerate(kfold.split(dataset)):
                 os.remove(f"./checkpoints/{best_f1_file_name}")
 
             print(f"\nSaving saving training for Fold={fold} and Epoch={epoch}")
+            best_f1 = f1
             torch.save(model.state_dict(), f"./checkpoints/f_{fold}_e_{epoch}_savestate.pt")
             best_f1_file_name = f"f_{fold}_e_{epoch}_savestate.pt"
 
